@@ -1,0 +1,249 @@
+/*
+ *  Simple HTTP get webclient test
+ */
+
+#include <ESP8266WiFi.h>
+#include <ArduinoJson.h>
+//#include <Adafruit_NeoPixel.h>
+
+const char* ssid     = "Zachmann";
+const char* password = "bollY62417";
+
+#define HOST "wind-bow.glitch.me"
+#define PATH "/twitch-api/streams/wolvesatmydoor"
+
+#define HOST2 "tmi.twitch.tv"
+#define SUBPATH "/hosts?include_logins=1&host="
+
+#define REFRESH 20  // seconds between refresh
+#define ESP8266_LED 5
+
+#define RESPONSE_MAX    (400)
+char jsonResponse[RESPONSE_MAX];
+uint16_t responseIndex = 0;
+
+void setup() {
+  //strip.begin();
+  pinMode(ESP8266_LED, OUTPUT);
+  
+  Serial.begin(115200);
+  delay(100);
+
+  // We start by connecting to a WiFi network
+
+  Serial.println();
+  Serial.println();
+  Serial.print("Connecting to ");
+  Serial.println(ssid);
+  
+  WiFi.begin(ssid, password);
+  
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(500);
+    Serial.print(".");
+  }
+
+  Serial.println("");
+  Serial.println("WiFi connected");  
+  Serial.println("IP address: ");
+  Serial.println(WiFi.localIP());
+}
+
+int value = 0;
+
+void loop() 
+{
+  delay(5000);
+  ++value;
+
+  Serial.print("connecting to ");
+  Serial.println(HOST);
+  
+  // Use WiFiClient class to create TCP connections
+  WiFiClientSecure client;
+  if (!client.connect(HOST, 443)) 
+  {
+    Serial.println("connection failed");
+    return;
+  }
+  
+  // We now create a URI for the request
+  Serial.print("Requesting URL: ");
+  Serial.println(PATH);
+  
+  // This will send the request to the server
+  client.print(String("GET ") + PATH + " HTTP/1.1\r\n" +
+               "Host: " + HOST + "\r\n" + 
+               "Connection: close\r\n\r\n");
+
+  int32_t timeout = millis() + 1000;
+  while (client.available() == 0) 
+  { 
+    if (timeout - millis() < 0) { 
+      Serial.println(">>> Client Timeout !"); 
+      client.stop(); 
+      return;
+    }
+  }
+  
+  boolean isStreaming = false;
+  DynamicJsonBuffer jsonBuffer;
+  JsonVariant channelId;
+
+  delay(200);
+  
+  while(client.available())
+  {
+    if(client.peek() != '{')
+    {
+      client.read();
+    }
+    else
+    {
+      break;
+    } 
+  }
+
+  if(client.available())
+  {
+    JsonObject& root = jsonBuffer.parseObject(client);
+
+    if(!root.success())
+    {
+      Serial.println("parseObject() failed");
+    }
+    else
+    {   
+      channelId = root["stream"]["channel"]["_id"];
+
+      if(channelId.success())
+      {
+        Serial.print("Is streaming or hosting, stream id: ");
+        isStreaming = true;
+        Serial.println(channelId.as<char*>());
+        
+      }
+      else
+      {
+       Serial.println("Not online"); 
+      }
+    }
+  }
+  else
+  {
+    Serial.println("Response did not include Json Object");
+  }
+  client.stop();
+
+  if(isStreaming)
+  {
+    Serial.print("connecting to ");
+    Serial.println(HOST2);
+  
+    // Use WiFiClient class to create TCP connections
+    if (!client.connect(HOST2, 443)) 
+    {
+      Serial.println("connection failed");
+      return;
+    }
+    
+    // We now create a URI for the request
+    Serial.print("Requesting URL: ");
+    Serial.println(SUBPATH + String(channelId.as<char*>()));
+    
+    // This will send the request to the server
+    client.print(String("GET ") + SUBPATH + String(channelId.as<char*>()) + " HTTP/1.1\r\n" +
+                 "Host: " + HOST2 + "\r\n" + 
+                 "Connection: close\r\n\r\n");
+  
+    int32_t timeout = millis() + 1000;
+    while (client.available() == 0) 
+    { 
+      if (timeout - millis() < 0) { 
+        Serial.println(">>> Client Timeout !"); 
+        client.stop(); 
+        return;
+      }
+    }
+
+    jsonBuffer.clear();
+ 
+    delay(200);
+    
+    while(client.available())
+    {
+      if(client.peek() != '{')
+      {
+        client.read();
+      }
+      else
+      {
+        break;
+      } 
+    }
+  
+    if(client.available())
+    {
+      JsonObject& root = jsonBuffer.parseObject(client);
+  
+      if(!root.success())
+      {
+        Serial.println("parseObject() failed");
+      }
+      else
+      {   
+        JsonVariant targetId = root["hosts"]["0"]["target_id"];
+  
+        if(targetId.success())
+        {
+          Serial.print("Is hosting, target id: ");
+          isStreaming = false;
+          Serial.println(targetId.as<char*>());
+          
+        }
+        else
+        {
+         Serial.println("Streaming, not hosting"); 
+        }
+      }
+    }
+    else
+    {
+      Serial.println("Response did not include Json Object");
+    }
+  }
+  
+
+  Serial.print("Streaming status: "); Serial.println(isStreaming);
+  digitalWrite(ESP8266_LED, isStreaming);
+  //if (isStreaming) {
+    //colorWipe(strip.Color(255, 0, 0), 50); // Red
+  //} else {
+    //colorWipe(strip.Color(10, 10, 10), 50); // Off
+  //}
+  Serial.println("disconnecting from server.");
+  client.stop();
+
+  delay(REFRESH*1000);
+}
+
+bool removeHeader(char * str, uint16_t len)
+{
+  return false;
+}
+
+bool indexOf(char const &symbol, char * str, uint16_t const &len, uint16_t &index)
+{
+  bool success = false;
+  for(uint16_t i = 0; i < len; i++)
+  {
+    if(str[i] == symbol)
+    {
+      success = true;
+      index = i;
+      break;
+    }
+  }
+  return success;
+}
+
