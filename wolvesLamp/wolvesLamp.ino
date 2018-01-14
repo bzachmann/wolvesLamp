@@ -1,16 +1,14 @@
 #include <Arduino.h>
-
-#define ESP8266_LED 5
+#include "apmain.h"
+#include "debugserial.h"
 
 void setup()
 {
-    pinMode(ESP8266_LED, OUTPUT);
+    debugserial_init();
+    ApMain::inst.init();
 }
 
 void loop()
 {
-    digitalWrite(ESP8266_LED, true);
-    delay(500);
-    digitalWrite(ESP8266_LED, false);
-    delay(500);
+    ApMain::inst.run();
 }

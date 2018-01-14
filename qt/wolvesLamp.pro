@@ -6,10 +6,12 @@ CONFIG -= qt
 SOURCES += \
     main.cpp \
     ../wolvesLamp/*.c* \
-    ../wolvesLamp/*.ino
+    ../wolvesLamp/*.ino \
+    ../wolvesLamp/twitchstreamerinfo.cpp
 
 HEADERS += \
-    ../wolvesLamp/*.h*
+    ../wolvesLamp/*.h* \
+    ../wolvesLamp/twitchstreamerinfo.h
 
 INCLUDEPATH += C:/Program Files (x86)/Arduino/hardware/arduino/avr/cores/arduino
 
