@@ -49,14 +49,13 @@ private:
     };
 
 public:    
-    TwitchStreamerInfo(String twitchName) :
+    TwitchStreamerInfo(String twitchName, String twitchId) :
         online(false),
         hosting(false),
         twitchName(twitchName),
-        twitchId(""),
+        twitchId(twitchId),
         twitchGameName(""),
         hostName(""),
-        hostId(""),
         hostGameName(""),
         upTimeMs(0),
         timeStamp(0) {}
@@ -71,10 +70,10 @@ private:
     uint8_t error;
 
     String const twitchName;
-    String twitchId;
+    String const twitchId;
     String twitchGameName;
     String hostName;
-    String hostId;
+    String hostDisplayName;
     String hostGameName;
     WiFiClientSecure client;
     DynamicJsonBuffer jsonBuffer;
