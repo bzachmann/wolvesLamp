@@ -24,6 +24,7 @@ private:
         ERROR_TIMEOUT_HOST_STATUS,
         ERROR_NO_JSON_HOST_STATUS,
         ERROR_PARSING_JSON_HOST_STATUS,
+        ERROR_INVALID_STATE,
         NUM_ERRORS
     };
 
@@ -44,6 +45,7 @@ private:
         STATE_REQUESTING_PATH_HOST_STATUS,
         STATE_WAITING_FOR_HOST_STATUS,
         STATE_PARSING_JSON_HOST_STATUS,
+        STATE_DONE,
         STATE_ERROR,
         NUM_UPDATE_STATES
     };
@@ -52,21 +54,47 @@ public:
     TwitchStreamerInfo(String twitchName, String twitchId) :
         online(false),
         hosting(false),
+        done(false),
         twitchName(twitchName),
         twitchId(twitchId),
         twitchGameName(""),
         hostName(""),
         hostGameName(""),
+        updateState(STATE_CHECKING_WIFI_CONNECTION),
         upTimeMs(0),
-        timeStamp(0) {}
+        timeOld(0),
+        timeNew(0){}
 
     void init();
     void run();
 
+    bool isLive();
+    bool isHosting();
+    uint32_t getUpTimeSeconds();
+
+private:
+    void updateStateMachine();
+    void actionStateCheckingWifiConnection();
+    void actionStateConnectingToWifi();
+    void actionStateWaitingForWifiConnection();
+    void actionStateConnectingToStreamStatus();
+    void actionStateRequestingPathStreamStatus();
+    void actionStateWaitingForStreamStatus();
+    void actionStateParsingJsonStreamStatus();
+    void actionStateConnectingToHostLookup();
+    void actionStateRequestingPathHostLookup();
+    void actionStateWaitingForHostLookup();
+    void actionStateParsingJsonHostLookup();
+    void actionStateConnectingToHostStatus();
+    void actionStateRequestingPathHostStatus();
+    void actionStateWaitingForHostStatus();
+    void actionStateParsingJsonHostStatus();
+    void actionStateError();
 
 private:
     bool online;
     bool hosting;
+    bool done;
     uint8_t error;
 
     String const twitchName;
@@ -78,8 +106,11 @@ private:
     WiFiClientSecure client;
     DynamicJsonBuffer jsonBuffer;
 
+    updateState_t updateState;
+
     uint32_t upTimeMs;
-    uint32_t timeStamp;
+    uint16_t timeOld;
+    uint16_t timeNew;
 };
 
 #endif // TWITCHSTREAMERINFO_H
