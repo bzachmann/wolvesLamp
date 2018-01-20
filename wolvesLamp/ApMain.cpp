@@ -9,15 +9,29 @@
 #define TWITCH_CHANNEL_ID       ("20730412")
 
 
+#define OLED_RESET 2
+
 ApMain ApMain::inst;
+
+MarqueeString::Config_t const ApMain::marqueeConfig =
+{
+    .screenLength = 21,
+    .scrollDelayMs = 10000,
+    .scrollSpeed = 6
+};
+
+
 ApMain::ApMain() :
-    streamerInfo(TWITCH_NAME, TWITCH_CHANNEL_ID)
+    streamerInfo(TWITCH_NAME, TWITCH_CHANNEL_ID),
+    marqueeString(marqueeConfig),
+    display(OLED_RESET)
 {
 
 }
 
 void ApMain::init()
 {
+    display.begin(SSD1306_SWITCHCAPVCC, 0x3C);
 }
 
 void ApMain::run()
@@ -44,5 +58,16 @@ void ApMain::run()
     }
 
     streamerInfo.run();
+
+    marqueeString.setString("Playing: PLAYERUNKNOWN'S BATTLEGROUNDS");
+    marqueeString.run();
+
+    display.setTextColor(WHITE);
+    display.clearDisplay();
+    display.setCursor(0,0);
+    display.println(marqueeString.getSubString());
+    display.display();
+
+
     timeOld = timeNew;
 }

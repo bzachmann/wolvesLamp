@@ -7,11 +7,13 @@ SOURCES += \
     main.cpp \
     ../wolvesLamp/*.c* \
     ../wolvesLamp/*.ino \
-    ../wolvesLamp/twitchstreamerinfo.cpp
+    ../wolvesLamp/twitchstreamerinfo.cpp \
+    ../wolvesLamp/marqueestring.cpp
 
 HEADERS += \
     ../wolvesLamp/*.h* \
-    ../wolvesLamp/twitchstreamerinfo.h
+    ../wolvesLamp/twitchstreamerinfo.h \
+    ../wolvesLamp/marqueestring.h
 
 INCLUDEPATH += C:/Program Files (x86)/Arduino/hardware/arduino/avr/cores/arduino
 
