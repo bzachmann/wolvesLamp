@@ -68,8 +68,13 @@ public:
     void init();
     void run();
 
+    void reset();
+    bool isDone();
     bool isLive();
     bool isHosting();
+    String getGameName();
+    String getHostName();
+    String getHostGameName();
     uint32_t getUpTimeSeconds();
 
 private:
@@ -109,8 +114,8 @@ private:
     updateState_t updateState;
 
     uint32_t upTimeMs;
-    uint16_t timeOld;
-    uint16_t timeNew;
+    uint32_t timeOld;
+    uint32_t timeNew;
 };
 
 #endif // TWITCHSTREAMERINFO_H

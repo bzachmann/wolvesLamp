@@ -29,7 +29,7 @@ void TwitchStreamerInfo::run()
 
     if(isLive())
     {
-        upTimeMs += (timeNew - timeOld);
+        upTimeMs = upTimeMs + (timeNew - timeOld);
     }
     else
     {
@@ -39,14 +39,48 @@ void TwitchStreamerInfo::run()
     timeOld = timeNew;
 }
 
+void TwitchStreamerInfo::reset()
+{
+    online = false;
+    hosting = false;
+    done = false;
+    twitchGameName = "";
+    hostName = "";
+    hostDisplayName = "";
+    hostGameName = "";
+    client.stop();
+    jsonBuffer.clear();
+    updateState = STATE_CHECKING_WIFI_CONNECTION;
+}
+
+bool TwitchStreamerInfo::isDone()
+{
+    return done;
+}
+
 bool TwitchStreamerInfo::isHosting()
 {
     return hosting;
 }
 
+String TwitchStreamerInfo::getGameName()
+{
+    return twitchGameName;
+}
+
+String TwitchStreamerInfo::getHostName()
+{
+    String retVal = hostDisplayName;
+    if(retVal == "")
+    {
+        retVal = hostName;
+    }
+    return retVal;
+}
+
 uint32_t TwitchStreamerInfo::getUpTimeSeconds()
 {
-    return upTimeMs;
+    return upTimeMs / 1000;
 }
 
 bool TwitchStreamerInfo::isLive()
@@ -104,6 +138,7 @@ void TwitchStreamerInfo::updateStateMachine()
         actionStateParsingJsonHostStatus();
         break;
     case STATE_DONE:
+        done = true;
         //do nothing, wait for reset
         break;
     case STATE_ERROR:

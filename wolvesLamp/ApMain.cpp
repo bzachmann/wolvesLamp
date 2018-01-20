@@ -4,7 +4,7 @@
 #include "debugserial.h"
 
 //#define TWITCH_NAME     ("wolvesatmydoor")
-//#define TWITCH_ID       ("42781716")
+//#define TWITCH_CHANNEL_ID       ("42781716")
 #define TWITCH_NAME             ("guude")
 #define TWITCH_CHANNEL_ID       ("20730412")
 
@@ -26,7 +26,7 @@ void ApMain::run()
     static uint16_t timeout = 0;
     timeNew = millis();
 
-    if(timeout < 5000)
+    if(timeout < 100)
     {
         timeout += timeNew - timeOld;
     }
@@ -35,8 +35,10 @@ void ApMain::run()
         timeout = 0;
         if(streamerInfo.isLive())
         {
+            static uint32_t upTime;
+            upTime = streamerInfo.getUpTimeSeconds();
             debugPrint("Uptime: ");
-            debugPrint(streamerInfo.getUpTimeSeconds());
+            debugPrint(upTime);
             debugPrint(" seconds\n");
         }
     }
