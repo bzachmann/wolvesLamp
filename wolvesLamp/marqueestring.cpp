@@ -92,9 +92,6 @@ void MarqueeString::stepShiftString()
     shiftString = shiftString.substring(1, shiftString.length());
     shiftString.concat(shiftChar);
 
-    debugPrint(shiftString);
-    debugPrint("\n");
-
     stringIndex++;
     if(stringIndex == shiftString.length())
     {

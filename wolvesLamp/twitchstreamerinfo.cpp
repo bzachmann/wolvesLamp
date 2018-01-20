@@ -78,6 +78,11 @@ String TwitchStreamerInfo::getHostName()
     return retVal;
 }
 
+String TwitchStreamerInfo::getHostGameName()
+{
+    return hostGameName;
+}
+
 uint32_t TwitchStreamerInfo::getUpTimeSeconds()
 {
     return upTimeMs / 1000;

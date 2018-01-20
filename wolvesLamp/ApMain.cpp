@@ -5,33 +5,25 @@
 
 //#define TWITCH_NAME     ("wolvesatmydoor")
 //#define TWITCH_CHANNEL_ID       ("42781716")
-#define TWITCH_NAME             ("guude")
+//#define TWITCH_NAME             ("guude")
+//#define TWITCH_CHANNEL_ID       ("20730412")
+#define TWITCH_NAME             ("goldglove")
 #define TWITCH_CHANNEL_ID       ("20730412")
 
 
-#define OLED_RESET 2
-
 ApMain ApMain::inst;
-
-MarqueeString::Config_t const ApMain::marqueeConfig =
-{
-    .screenLength = 21,
-    .scrollDelayMs = 10000,
-    .scrollSpeed = 6
-};
-
 
 ApMain::ApMain() :
     streamerInfo(TWITCH_NAME, TWITCH_CHANNEL_ID),
-    marqueeString(marqueeConfig),
-    display(OLED_RESET)
+    streamerDisplay()
 {
 
 }
 
 void ApMain::init()
 {
-    display.begin(SSD1306_SWITCHCAPVCC, 0x3C);
+    streamerInfo.init();
+    streamerDisplay.init();
 }
 
 void ApMain::run()
@@ -58,16 +50,13 @@ void ApMain::run()
     }
 
     streamerInfo.run();
-
-    marqueeString.setString("Playing: PLAYERUNKNOWN'S BATTLEGROUNDS");
-    marqueeString.run();
-
-    display.setTextColor(WHITE);
-    display.clearDisplay();
-    display.setCursor(0,0);
-    display.println(marqueeString.getSubString());
-    display.display();
-
+    streamerDisplay.setStreaming(streamerInfo.isLive());
+    streamerDisplay.setHosting(streamerInfo.isHosting());
+    streamerDisplay.setGameName(streamerInfo.getGameName());
+    streamerDisplay.setHostName(streamerInfo.getHostName());
+    streamerDisplay.setHostGameName(streamerInfo.getHostGameName());
+    streamerDisplay.setUpTime("99:99");
+    streamerDisplay.run();
 
     timeOld = timeNew;
 }
