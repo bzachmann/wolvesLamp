@@ -2,20 +2,25 @@
 
 #include <Arduino.h>
 #include "debugserial.h"
+#include "timeformatter.h"
 
 //#define TWITCH_NAME     ("wolvesatmydoor")
 //#define TWITCH_CHANNEL_ID       ("42781716")
 //#define TWITCH_NAME             ("guude")
 //#define TWITCH_CHANNEL_ID       ("20730412")
-#define TWITCH_NAME             ("goldglove")
+#define TWITCH_NAME             ("anderzel")
 #define TWITCH_CHANNEL_ID       ("20730412")
+
+//#define TWITCH_TARGET_UPTIME    (6.0f) //6 hours
+#define TWITCH_TARGET_UPTIME    (0.05f) //3 minutes
 
 
 ApMain ApMain::inst;
 
 ApMain::ApMain() :
-    streamerInfo(TWITCH_NAME, TWITCH_CHANNEL_ID),
-    streamerDisplay()
+    streamerInfo(TWITCH_NAME, TWITCH_CHANNEL_ID, TWITCH_TARGET_UPTIME),
+    streamerDisplay(),
+    ledStrip()
 {
 
 }
@@ -24,6 +29,7 @@ void ApMain::init()
 {
     streamerInfo.init();
     streamerDisplay.init();
+    ledStrip.init();
 }
 
 void ApMain::run()
@@ -55,8 +61,16 @@ void ApMain::run()
     streamerDisplay.setGameName(streamerInfo.getGameName());
     streamerDisplay.setHostName(streamerInfo.getHostName());
     streamerDisplay.setHostGameName(streamerInfo.getHostGameName());
-    streamerDisplay.setUpTime("99:99");
+
+    TimeFormatter timeformatter;
+    timeformatter.setSeconds(streamerInfo.getUpTimeSeconds());
+    streamerDisplay.setUpTime(timeformatter.getFormattedTime());
     streamerDisplay.run();
+
+    ledStrip.setState(streamerInfo.isLive());
+    ledStrip.setProgress(streamerInfo.getProgress());
+    ledStrip.run();
+
 
     timeOld = timeNew;
 }

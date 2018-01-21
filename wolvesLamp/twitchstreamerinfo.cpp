@@ -88,6 +88,17 @@ uint32_t TwitchStreamerInfo::getUpTimeSeconds()
     return upTimeMs / 1000;
 }
 
+uint8_t TwitchStreamerInfo::getProgress()
+{
+    uint32_t targetSeconds = targetStreamHours * 3600.0;
+    float progressPercentage = getUpTimeSeconds()/(float)targetSeconds;
+    if(progressPercentage > 1.0)
+    {
+        progressPercentage = 1.0;
+    }
+    return (uint8_t)(progressPercentage * 255);
+}
+
 bool TwitchStreamerInfo::isLive()
 {
     return (online && !isHosting());

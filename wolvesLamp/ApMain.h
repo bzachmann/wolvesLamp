@@ -3,6 +3,7 @@
 
 #include "twitchstreamerinfo.h"
 #include "twitchinfodisplay.h"
+#include "ledstrip.h"
 
 class ApMain {
 
@@ -17,6 +18,7 @@ public:
 private:
     TwitchStreamerInfo streamerInfo;
     TwitchInfoDisplay streamerDisplay;
+    LEDStrip ledStrip;
 };
 
 #endif //APMAIN_H

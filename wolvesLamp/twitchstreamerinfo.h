@@ -51,12 +51,13 @@ private:
     };
 
 public:    
-    TwitchStreamerInfo(String twitchName, String twitchId) :
+    TwitchStreamerInfo(String twitchName, String twitchId, float hours) :
         online(false),
         hosting(false),
         done(false),
         twitchName(twitchName),
         twitchId(twitchId),
+        targetStreamHours(hours),
         twitchGameName(""),
         hostName(""),
         hostGameName(""),
@@ -76,6 +77,7 @@ public:
     String getHostName();
     String getHostGameName();
     uint32_t getUpTimeSeconds();
+    uint8_t getProgress();
 
 private:
     void updateStateMachine();
@@ -104,6 +106,7 @@ private:
 
     String const twitchName;
     String const twitchId;
+    float const targetStreamHours;
     String twitchGameName;
     String hostName;
     String hostDisplayName;
