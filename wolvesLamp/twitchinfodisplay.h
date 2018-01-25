@@ -20,6 +20,7 @@ public:
 
     void setStreaming(bool status);
     void setHosting(bool status);
+    void setErrorCode(uint8_t error);
     void setUpTime(String uptime);
     void setGameName(String name);
     void setHostName(String name);
@@ -29,6 +30,7 @@ private:
     void displayOffline();
     void displayOnline();
     void displayHosting();
+    void displayError();
 
 private:
     static MarqueeString::Config_t const gameNameConfig;
@@ -37,6 +39,7 @@ private:
 
     bool streaming;
     bool hosting;
+    uint8_t errorCode;
 
     String upTime;
     MarqueeString gameName;

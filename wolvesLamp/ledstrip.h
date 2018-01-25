@@ -8,6 +8,7 @@
 #define NUM_LEDS                        (8)
 #define LED_PIN                         (14)
 #define BRIGHTNESS_LEVELS               (5)
+#define DEFAULT_BRIGHTNESS              (128)
 
 class LEDStrip
 {
@@ -17,7 +18,8 @@ public:
         brightnessLevel(0),
         state(0),
         settings(),
-        leds(NUM_LEDS, LED_PIN){}
+        leds(NUM_LEDS, LED_PIN),
+        error(false){}
     void init();
     void run();
 
@@ -25,6 +27,7 @@ public:
     void setBrightness(uint8_t value);
     void setState(bool value);
     void setProgress(uint8_t value);
+    void setError(bool value);
 
 private:
     uint8_t brightness;
@@ -33,6 +36,8 @@ private:
     LEDSetting settings;
 
     Adafruit_NeoPixel leds;
+
+    bool error;
 
 };
 

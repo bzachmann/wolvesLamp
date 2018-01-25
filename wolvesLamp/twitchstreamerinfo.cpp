@@ -41,13 +41,13 @@ void TwitchStreamerInfo::run()
 
 void TwitchStreamerInfo::reset()
 {
-    online = false;
-    hosting = false;
+    //online = false;
+    //hosting = false;
     done = false;
-    twitchGameName = "";
-    hostName = "";
-    hostDisplayName = "";
-    hostGameName = "";
+    //twitchGameName = "";
+    //hostName = "";
+    //hostDisplayName = "";
+    //hostGameName = "";
     client.stop();
     jsonBuffer.clear();
     updateState = STATE_CHECKING_WIFI_CONNECTION;
@@ -61,6 +61,16 @@ bool TwitchStreamerInfo::isDone()
 bool TwitchStreamerInfo::isHosting()
 {
     return hosting;
+}
+
+bool TwitchStreamerInfo::isInError()
+{
+    return updateState == STATE_ERROR;
+}
+
+uint8_t TwitchStreamerInfo::getError()
+{
+    return error;
 }
 
 String TwitchStreamerInfo::getGameName()
@@ -158,7 +168,6 @@ void TwitchStreamerInfo::updateStateMachine()
         //do nothing, wait for reset
         break;
     case STATE_ERROR:
-        actionStateError();
         break;
     default:
         debugPrint("Invalid state detected\n");
@@ -450,14 +459,14 @@ void TwitchStreamerInfo::actionStateParsingJsonHostLookup()
       }
       else
       {
-          JsonVariant tempVariant = root["hosts"]["0"]["target_login"];
+          JsonVariant tempVariant = root["hosts"][0]["target_login"];
           if(tempVariant.success())
           {
               hosting = true;
               hostName = String(tempVariant.as<char*>());
               debugPrint("Is hosting: ");
 
-              tempVariant = root["hosts"]["0"]["target_display_name"];
+              tempVariant = root["hosts"][0]["target_display_name"];
               if(tempVariant.success())
               {
                   hostDisplayName = String(tempVariant.as<char*>());
@@ -615,12 +624,4 @@ void TwitchStreamerInfo::actionStateParsingJsonHostStatus()
     }
 
     client.stop();
-}
-
-void TwitchStreamerInfo::actionStateError()
-{
-    debugPrint("Error State: ");
-    debugPrint(error);
-    debugPrint("\n");
-    delay(10000);
 }

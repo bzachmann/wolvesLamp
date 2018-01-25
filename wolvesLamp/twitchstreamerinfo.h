@@ -7,7 +7,7 @@
 
 class TwitchStreamerInfo
 {
-private:
+public:
     enum twitchError_t
     {
         ERROR_NO_ERROR = 0,
@@ -27,6 +27,8 @@ private:
         ERROR_INVALID_STATE,
         NUM_ERRORS
     };
+
+private:
 
     enum updateState_t
     {
@@ -73,6 +75,8 @@ public:
     bool isDone();
     bool isLive();
     bool isHosting();
+    bool isInError();
+    uint8_t getError();
     String getGameName();
     String getHostName();
     String getHostGameName();
@@ -96,7 +100,6 @@ private:
     void actionStateRequestingPathHostStatus();
     void actionStateWaitingForHostStatus();
     void actionStateParsingJsonHostStatus();
-    void actionStateError();
 
 private:
     bool online;

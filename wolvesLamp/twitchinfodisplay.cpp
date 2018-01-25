@@ -1,4 +1,5 @@
 #include "twitchinfodisplay.h"
+#include "twitchstreamerinfo.h"
 
 #define OLED_RESET 2
 
@@ -26,6 +27,7 @@ MarqueeString::Config_t const TwitchInfoDisplay::hostGameNameConfig =
 TwitchInfoDisplay::TwitchInfoDisplay():
     streaming(0),
     hosting(0),
+    errorCode(TwitchStreamerInfo::ERROR_NO_ERROR),
     upTime(0),
     gameName(gameNameConfig),
     hostName(hostNameConfig),
@@ -45,7 +47,11 @@ void TwitchInfoDisplay::init()
 
 void TwitchInfoDisplay::run()
 {
-    if(hosting)
+    if(errorCode != TwitchStreamerInfo::ERROR_NO_ERROR)
+    {
+        displayError();
+    }
+    else if(hosting)
     {
         displayHosting();
         hostName.run();
@@ -71,6 +77,11 @@ void TwitchInfoDisplay::setStreaming(bool status)
 void TwitchInfoDisplay::setHosting(bool status)
 {
     hosting = status;
+}
+
+void TwitchInfoDisplay::setErrorCode(uint8_t error)
+{
+    errorCode = error;
 }
 
 void TwitchInfoDisplay::setUpTime(String uptime)
@@ -136,4 +147,14 @@ void TwitchInfoDisplay::displayHosting()
     display.println(hostGameName.getSubString());
     display.display();
 
+}
+
+void TwitchInfoDisplay::displayError()
+{
+    display.clearDisplay();
+    display.setCursor(0,0);
+    display.setTextSize(2);
+    display.println("ERROR");
+    display.println(errorCode);
+    display.display();
 }

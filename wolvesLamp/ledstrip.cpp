@@ -8,7 +8,7 @@ void LEDStrip::init()
 
 void LEDStrip::run()
 {
-    if(state != 0)
+    if((state != 0) && !error)
     {
         leds.setBrightness(brightness);
     }
@@ -23,17 +23,6 @@ void LEDStrip::run()
     {
         leds.setPixelColor(i, r, g, b);
     }
-
-    debugPrint(state);
-    debugPrint("\t");
-    debugPrint(brightness);
-    debugPrint("\t");
-    debugPrint(r);
-    debugPrint("\t");
-    debugPrint(g);
-    debugPrint("\t");
-    debugPrint(b);
-    debugPrint("\n");
 
     leds.show();
 }
@@ -60,7 +49,7 @@ void LEDStrip::setState(bool value)
     static bool prevState = false;
     if(value & !prevState)
     {
-        brightness = 255;
+        brightness = DEFAULT_BRIGHTNESS;
     }
     state = value;
     prevState = state;
@@ -69,4 +58,9 @@ void LEDStrip::setState(bool value)
 void LEDStrip::setProgress(uint8_t value)
 {
     settings.setProgress(value);
+}
+
+void LEDStrip::setError(bool value)
+{
+    error = value;
 }

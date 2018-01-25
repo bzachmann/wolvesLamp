@@ -4,15 +4,17 @@
 #include "debugserial.h"
 #include "timeformatter.h"
 
-//#define TWITCH_NAME     ("wolvesatmydoor")
-//#define TWITCH_CHANNEL_ID       ("42781716")
+#define TWITCH_NAME     ("wolvesatmydoor")
+#define TWITCH_CHANNEL_ID       ("41721716")
 //#define TWITCH_NAME             ("guude")
 //#define TWITCH_CHANNEL_ID       ("20730412")
-#define TWITCH_NAME             ("anderzel")
-#define TWITCH_CHANNEL_ID       ("20730412")
+//#define TWITCH_NAME             ("anderzel")
+//#define TWITCH_CHANNEL_ID       ("20730412")
 
-//#define TWITCH_TARGET_UPTIME    (6.0f) //6 hours
-#define TWITCH_TARGET_UPTIME    (0.05f) //3 minutes
+#define TWITCH_TARGET_UPTIME    (6.0f) //6 hours
+#define PING_INTERVAL_S         (300000) // 5 minutes
+//#define PING_INTERVAL_S         (5000) // 5 minutes
+#define ERROR_TOLERANCE         (3)
 
 
 ApMain ApMain::inst;
@@ -34,28 +36,40 @@ void ApMain::init()
 
 void ApMain::run()
 {
-    static uint16_t timeOld, timeNew = millis();
-    static uint16_t timeout = 0;
+    static uint8_t errorCounter = 0;
+    static uint32_t timeOld, timeNew = millis();
     timeNew = millis();
 
-    if(timeout < 100)
+    streamerInfo.run();
+
+
+    if(streamerInfo.isDone())
     {
+        static uint32_t timeout = 0;
+        errorCounter = 0;
         timeout += timeNew - timeOld;
-    }
-    else
-    {
-        timeout = 0;
-        if(streamerInfo.isLive())
+
+        if(timeout > PING_INTERVAL_S)
         {
-            static uint32_t upTime;
-            upTime = streamerInfo.getUpTimeSeconds();
-            debugPrint("Uptime: ");
-            debugPrint(upTime);
-            debugPrint(" seconds\n");
+            streamerInfo.reset();
+            timeout = 0;
         }
     }
+    else if(streamerInfo.isInError())
+    {
+        if(errorCounter > ERROR_TOLERANCE)
+        {
+            streamerDisplay.setErrorCode(streamerInfo.getError());
+            ledStrip.setError(true);
+        }
+        else
+        {
+            errorCounter++;
+            streamerInfo.reset();
+        }
 
-    streamerInfo.run();
+    }
+
     streamerDisplay.setStreaming(streamerInfo.isLive());
     streamerDisplay.setHosting(streamerInfo.isHosting());
     streamerDisplay.setGameName(streamerInfo.getGameName());
