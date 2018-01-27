@@ -8,7 +8,7 @@
 #define TWITCH_CHANNEL_ID       ("41721716")
 //#define TWITCH_NAME             ("guude")
 //#define TWITCH_CHANNEL_ID       ("20730412")
-//#define TWITCH_NAME             ("anderzel")
+//#define TWITCH_NAME             ("ungespielt")
 //#define TWITCH_CHANNEL_ID       ("20730412")
 
 #define TWITCH_TARGET_UPTIME    (6.0f) //6 hours
@@ -16,13 +16,16 @@
 //#define PING_INTERVAL_S         (5000) // 5 minutes
 #define ERROR_TOLERANCE         (3)
 
+#define TOUCH_BUTTON            (16)
+
 
 ApMain ApMain::inst;
 
 ApMain::ApMain() :
     streamerInfo(TWITCH_NAME, TWITCH_CHANNEL_ID, TWITCH_TARGET_UPTIME),
     streamerDisplay(),
-    ledStrip()
+    ledStrip(),
+    button(TOUCH_BUTTON)
 {
 
 }
@@ -32,6 +35,7 @@ void ApMain::init()
     streamerInfo.init();
     streamerDisplay.init();
     ledStrip.init();
+    button.init();
 }
 
 void ApMain::run()
@@ -81,6 +85,16 @@ void ApMain::run()
     streamerDisplay.setUpTime(timeformatter.getFormattedTime());
     streamerDisplay.run();
 
+    button.run();
+
+    if(button.getHold())
+    {
+        ledStrip.setBrightness(0);
+    }
+    else if (button.getTap())
+    {
+        ledStrip.toggleBrightness();
+    }
     ledStrip.setState(streamerInfo.isLive());
     ledStrip.setProgress(streamerInfo.getProgress());
     ledStrip.run();

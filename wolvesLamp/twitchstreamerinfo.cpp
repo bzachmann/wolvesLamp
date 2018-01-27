@@ -4,7 +4,7 @@
 
 #define SSID                        ("Zachmann")
 #define PASSWORD                    ("bollY62417")
-#define TIMEOUT_WIFI_MS             (5000)
+#define TIMEOUT_WIFI_MS             (10000)
 #define TIMEOUT_STREAM_STATUS_MS    (5000)
 #define DELAY_STREAM_STATUS_MS      (200)
 #define TIMEOUT_HOST_LOOKUP_MS      (5000)
@@ -20,6 +20,7 @@
 void TwitchStreamerInfo::init()
 {
     timeOld = timeNew = millis();
+    WiFi.mode(WIFI_OFF);
 }
 
 void TwitchStreamerInfo::run()
@@ -214,6 +215,7 @@ void TwitchStreamerInfo::actionStateWaitingForWifiConnection()
         }
         else
         {
+            WiFi.mode(WIFI_OFF);
             debugPrint("WiFi connection timeout\n");
             error = ERROR_WIFI_CONNECTION;
             updateState = STATE_ERROR;

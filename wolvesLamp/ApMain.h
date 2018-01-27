@@ -4,6 +4,7 @@
 #include "twitchstreamerinfo.h"
 #include "twitchinfodisplay.h"
 #include "ledstrip.h"
+#include "capacitivetouchbutton.h"
 
 class ApMain {
 
@@ -19,6 +20,7 @@ private:
     TwitchStreamerInfo streamerInfo;
     TwitchInfoDisplay streamerDisplay;
     LEDStrip ledStrip;
+    CapacitiveTouchButton button;
 };
 
 #endif //APMAIN_H

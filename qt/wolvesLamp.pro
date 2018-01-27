@@ -7,11 +7,13 @@ SOURCES += \
     main.cpp \
     ../wolvesLamp/*.c* \
     ../wolvesLamp/*.ino \
-    ../wolvesLamp/ledstrip.cpp
+    ../wolvesLamp/ledstrip.cpp \
+    ../wolvesLamp/capacitivetouchbutton.cpp
 
 HEADERS += \
     ../wolvesLamp/*.h* \
-    ../wolvesLamp/ledstrip.h
+    ../wolvesLamp/ledstrip.h \
+    ../wolvesLamp/capacitivetouchbutton.h
 
 INCLUDEPATH += C:/Program Files (x86)/Arduino/hardware/arduino/avr/cores/arduino
 
